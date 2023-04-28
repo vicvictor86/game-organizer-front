@@ -4,6 +4,14 @@ interface GameInfoProps {
   containsData: boolean;
 }
 
+interface TopBarMenuProps {
+  connectedWithNotion: boolean;
+}
+
+interface InsertGameFormProps {
+  connectedWithNotion: boolean;
+}
+
 export const Container = styled.div`
   height: 100vh;
   width: 100vw;
@@ -29,7 +37,7 @@ export const Logout = styled.div`
   justify-content: start;
 `;
 
-export const TopBarMenu = styled.div`
+export const TopBarMenu = styled.div<TopBarMenuProps>`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -71,12 +79,16 @@ export const TopBarMenu = styled.div`
     svg {
       margin-right: 1.2rem;
     }
+
+    ${(props) => props.connectedWithNotion && css`
+      background-color: #4DB6AC;
+    `}
   }
 
 
 `;
 
-export const InsertGameForm = styled.div`
+export const InsertGameForm = styled.div<InsertGameFormProps>`
   height: 100%;
   width: 100%;
   display: flex;
@@ -132,6 +144,10 @@ export const InsertGameForm = styled.div`
       &:hover {
         color: #4DB6AC;
       }
+
+      ${(props) => !props.connectedWithNotion && css`
+        background-color: #f2f2f280;
+      `}
     }
 
     a {

@@ -6,7 +6,7 @@ export const Container = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  background-image: url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80");
+  background-image: url("https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -23,7 +23,7 @@ export const Content = styled.div`
   max-width: 48.4rem;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.1);
-  border-right: #FFFFFF80 solid 0.1rem ;
+  border-right: #FFFFFF80 solid 0.1rem;
 
   form {
     margin: 80px 0;

@@ -7,6 +7,7 @@ import { api } from '../services/api';
 export interface UserProps {
   id: string;
   username: string;
+  notionUserConnections: object[];
 }
 
 interface AuthState {

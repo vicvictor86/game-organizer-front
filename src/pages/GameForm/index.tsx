@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { SiNotion } from 'react-icons/si';
 
@@ -31,10 +31,16 @@ interface GameInfo {
 
 export const GameForm: React.FC = () => {
   const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
+  const [connectedWithNotion, setConnectedWithNotion] = useState<boolean>(false);
 
   const navigate = useHistory();
 
   const { user, signOut } = useAuth();
+
+  useEffect(() => {
+    setConnectedWithNotion(user.notionUserConnections.length > 0);
+    console.log(user);
+  }, [user]);
 
   const {
     register,
@@ -74,6 +80,12 @@ export const GameForm: React.FC = () => {
     console.log(response.data);
   }, []);
 
+  const alertToConnect = useCallback(() => {
+    if (!connectedWithNotion) {
+      alert('Precisa conectar com o notion');
+    }
+  }, [connectedWithNotion]);
+
   const showPlatforms = useCallback(() => {
     let platformsString = '';
     gameInfo?.platforms.forEach((platform) => {
@@ -88,7 +100,7 @@ export const GameForm: React.FC = () => {
   return (
     <Container>
       <Content>
-        <TopBarMenu>
+        <TopBarMenu connectedWithNotion={connectedWithNotion}>
           <Logout>
             <Button icon={FiLogOut} color="#ffffff" onClick={handleSignOut}>
               Logout
@@ -99,17 +111,17 @@ export const GameForm: React.FC = () => {
           </h1>
           <a href="https://api.notion.com/v1/oauth/authorize?client_id=7fa6a818-b3ff-4a3f-890c-16e6ebeeb64e&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fgame-organizer.up.railway.app%2Fintegration">
             <SiNotion size={18} />
-            Conectar com o Notion
+            {connectedWithNotion ? 'Conexão com o notion completa' : 'Conectar com o Notion'}
           </a>
         </TopBarMenu>
-        <InsertGameForm>
+        <InsertGameForm connectedWithNotion={connectedWithNotion}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <h1>Adicione o jogo no seu Notion</h1>
 
-            <Input placeholder="Título do jogo" {...register('title')} />
+            <Input onClick={alertToConnect} readOnly={!connectedWithNotion} placeholder="Título do jogo" {...register('title')} />
             {errors.title && <span>This field is required</span>}
 
-            <Button type="submit">Enviar para o Notion</Button>
+            <Button disabled={!connectedWithNotion} type="submit">Enviar para o Notion</Button>
           </form>
           <GameInfos>
             <h1>Informações coletadas</h1>
