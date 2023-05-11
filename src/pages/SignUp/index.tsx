@@ -30,7 +30,7 @@ export const SignUp: React.FC = () => {
       const signUpSuccessful = await signUp({ username, password });
 
       if (signUpSuccessful) {
-        return navigate.push('/chat');
+        return navigate.push('/login');
       }
     },
     [signUp, navigate],
