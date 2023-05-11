@@ -10,6 +10,8 @@ export const Integration: React.FC = () => {
   const navigate = useHistory();
 
   useEffect(() => {
+    document.title = 'Integração';
+
     api.get(`integration?code=${searchParams.get('code')}`, {
       headers: {
         authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,

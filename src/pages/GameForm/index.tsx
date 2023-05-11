@@ -38,6 +38,8 @@ export const GameForm: React.FC = () => {
   const { user, signOut } = useAuth();
 
   useEffect(() => {
+    document.title = 'Adicione seu jogo';
+
     setConnectedWithNotion(user.notionUserConnections.length > 0);
   }, [user]);
 

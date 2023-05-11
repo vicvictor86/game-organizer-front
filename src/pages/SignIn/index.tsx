@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { FiLock, FiLogIn, FiUser } from 'react-icons/fi';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
@@ -15,6 +15,10 @@ interface Inputs {
 }
 
 export const SignIn: React.FC = () => {
+  useEffect(() => {
+    document.title = 'Entre na sua conta';
+  });
+
   const {
     register,
     handleSubmit,
