@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
 import { SignIn } from '../pages/SignIn';
 import { SignUp } from '../pages/SignUp';
@@ -11,6 +11,7 @@ const Routes: React.FC = () => (
     <Route path="/" exact component={SignIn} />
     <Route path="/sign-up" component={SignUp} />
     <Route path="/game-form" component={GameForm} />
+    <Route path="/integration" component={Redirect} />
   </Switch>
 );
 

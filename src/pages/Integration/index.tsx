@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { api } from '../../services/api';
 
-export const Redirect: React.FC = () => {
+export const Integration: React.FC = () => {
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
 
