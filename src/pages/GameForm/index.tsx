@@ -39,7 +39,6 @@ export const GameForm: React.FC = () => {
 
   useEffect(() => {
     setConnectedWithNotion(user.notionUserConnections.length > 0);
-    console.log(user);
   }, [user]);
 
   const {
@@ -77,7 +76,6 @@ export const GameForm: React.FC = () => {
     } as GameInfo;
 
     setGameInfo(gameInfoData as GameInfo);
-    console.log(response.data);
   }, []);
 
   const alertToConnect = useCallback(() => {
@@ -109,7 +107,7 @@ export const GameForm: React.FC = () => {
           <h1>
             Olá {user.username}, seja bem vindo
           </h1>
-          <a href="https://api.notion.com/v1/oauth/authorize?client_id=7fa6a818-b3ff-4a3f-890c-16e6ebeeb64e&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fgame-organizer.up.railway.app%2Fintegration">
+          <a href={process.env.REACT_APP_AUTHORIZATION_URL}>
             <SiNotion size={18} />
             {connectedWithNotion ? 'Conexão com o notion completa' : 'Conectar com o Notion'}
           </a>
