@@ -54,7 +54,11 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
   });
 
   const getUserUpdate = useCallback(async (userId: string): Promise<void> => {
-    const response = await api.get(`users/${userId}`);
+    const response = await api.get(`users/${userId}`, {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
+      },
+    });
 
     if (response.status === 200) {
       const { user } = response.data;
