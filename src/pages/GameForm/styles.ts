@@ -10,6 +10,7 @@ interface TopBarMenuProps {
 
 interface InsertGameFormProps {
   connectedWithNotion: boolean;
+  loadingVisible: boolean;
 }
 
 export const Container = styled.div`
@@ -142,11 +143,14 @@ export const InsertGameForm = styled.div<InsertGameFormProps>`
       transition: color 0.2s;
 
       &:hover {
-        color: #4DB6AC;
+        ${(props) => (props.connectedWithNotion && !props.loadingVisible) && css`
+          color: #4DB6AC;
+        `}
       }
 
-      ${(props) => !props.connectedWithNotion && css`
+      ${(props) => (!props.connectedWithNotion || props.loadingVisible) && css`
         background-color: #f2f2f280;
+        cursor: not-allowed;
       `}
     }
 

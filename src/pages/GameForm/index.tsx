@@ -1,16 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { SiNotion } from 'react-icons/si';
-
 import { useHistory } from 'react-router-dom';
+
+import { SiNotion } from 'react-icons/si';
 import { FiLogOut } from 'react-icons/fi';
+
+import { api } from '../../services/api';
+
 import {
   Container, Content, GameInfo, GameInfos, InsertGameForm, Logout, TopBarMenu,
 } from './styles';
+
+import { useAuth } from '../../hooks/auth';
+
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
-import { api } from '../../services/api';
-import { useAuth } from '../../hooks/Auth';
+import { Loading } from '../../components/Loading';
+import { useToast } from '../../hooks/toast';
 
 interface Inputs {
   title: string;
@@ -32,10 +38,12 @@ interface GameInfo {
 export const GameForm: React.FC = () => {
   const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
   const [connectedWithNotion, setConnectedWithNotion] = useState<boolean>(false);
+  const [loadingVisible, setLoadingVisible] = useState<boolean>(false);
 
   const navigate = useHistory();
 
   const { user, signOut } = useAuth();
+  const { createToast } = useToast();
 
   useEffect(() => {
     document.title = 'Adicione seu jogo';
@@ -56,6 +64,8 @@ export const GameForm: React.FC = () => {
   }, [navigate, signOut]);
 
   const onSubmit: SubmitHandler<Inputs> = useCallback(async ({ title }) => {
+    setLoadingVisible(true);
+
     const response = await api.post(
       '/games',
       {
@@ -78,13 +88,18 @@ export const GameForm: React.FC = () => {
     } as GameInfo;
 
     setGameInfo(gameInfoData as GameInfo);
+    setLoadingVisible(false);
   }, []);
 
   const alertToConnect = useCallback(() => {
     if (!connectedWithNotion) {
-      alert('Precisa conectar com o notion');
+      createToast({
+        type: 'error',
+        title: 'Conexão com o Notion necessária',
+        description: 'Conecte com o Notion para adicionar um jogo a sua lista',
+      });
     }
-  }, [connectedWithNotion]);
+  }, [connectedWithNotion, createToast]);
 
   const showPlatforms = useCallback(() => {
     let platformsString = '';
@@ -114,29 +129,40 @@ export const GameForm: React.FC = () => {
             {connectedWithNotion ? 'Conexão com o notion completa' : 'Conectar com o Notion'}
           </a>
         </TopBarMenu>
-        <InsertGameForm connectedWithNotion={connectedWithNotion}>
+        <InsertGameForm connectedWithNotion={connectedWithNotion} loadingVisible={loadingVisible}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <h1>Adicione o jogo no seu Notion</h1>
 
-            <Input onClick={alertToConnect} readOnly={!connectedWithNotion} placeholder="Título do jogo" {...register('title')} />
+            <Input
+              onClick={alertToConnect}
+              readOnly={!connectedWithNotion}
+              placeholder="Título do jogo"
+              errorMessage={errors.title?.message}
+              {...register('title')}
+            />
             {errors.title && <span>This field is required</span>}
 
-            <Button disabled={!connectedWithNotion} type="submit">Enviar para o Notion</Button>
+            <Button disabled={!connectedWithNotion || loadingVisible} type="submit">Enviar para o Notion</Button>
           </form>
           <GameInfos>
-            <h1>Informações coletadas</h1>
-            <GameInfo containsData={!!gameInfo && !!gameInfo.name}>
-              <p>Título: {gameInfo ? gameInfo.name : 'Título do jogo'}</p>
-            </GameInfo>
-            <GameInfo containsData={!!gameInfo && !!gameInfo.platforms}>
-              Plataformas: {gameInfo ? showPlatforms() : 'Steam'}
-            </GameInfo>
-            <GameInfo containsData={!!gameInfo && !!gameInfo.releaseDate}>
-              <p>Data de lançamento: {gameInfo ? gameInfo.releaseDate.substring(0, 10) : '25/12/2020'}</p>
-            </GameInfo>
-            <GameInfo containsData={!!gameInfo && !!gameInfo.timeToBeat}>
-              <p>Tempo para zerar: {gameInfo ? `${gameInfo.timeToBeat.mainExtra} horas` : '40 horas'}</p>
-            </GameInfo>
+            {!loadingVisible && (
+              <>
+                <h1>Informações coletadas</h1>
+                <GameInfo containsData={!!gameInfo && !!gameInfo.name}>
+                  <p>Título: {gameInfo ? gameInfo.name : 'Título do jogo'}</p>
+                </GameInfo>
+                <GameInfo containsData={!!gameInfo && !!gameInfo.platforms}>
+                  Plataformas: {gameInfo ? showPlatforms() : 'Steam'}
+                </GameInfo>
+                <GameInfo containsData={!!gameInfo && !!gameInfo.releaseDate}>
+                  <p>Data de lançamento: {gameInfo ? gameInfo.releaseDate.substring(0, 10) : '25/12/2020'}</p>
+                </GameInfo>
+                <GameInfo containsData={!!gameInfo && !!gameInfo.timeToBeat}>
+                  <p>Tempo para zerar: {gameInfo ? `${gameInfo.timeToBeat.mainExtra} horas` : '40 horas'}</p>
+                </GameInfo>
+              </>
+            )}
+            {loadingVisible && <Loading />}
           </GameInfos>
         </InsertGameForm>
       </Content>

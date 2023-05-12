@@ -3,15 +3,15 @@ import { BrowserRouter } from 'react-router-dom';
 
 import GlobalStyle from './styles/global';
 import Routes from './routes';
-import { AuthProvider } from './hooks/Auth';
+import { AppProvider } from './hooks';
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <AuthProvider>
+        <AppProvider>
           <Routes />
-        </AuthProvider>
+        </AppProvider>
       </BrowserRouter>
       <GlobalStyle />
     </>

@@ -1,13 +1,17 @@
 /* eslint-disable consistent-return */
 import React, { useCallback, useEffect } from 'react';
-import { FiLock, FiLogIn, FiUser } from 'react-icons/fi';
-import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import { useForm, SubmitHandler } from 'react-hook-form';
+
+import { FiLock, FiLogIn, FiUser } from 'react-icons/fi';
+
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 
 import { Container, Content } from './styles';
-import { useAuth } from '../../hooks/Auth';
+
+import { useAuth } from '../../hooks/auth';
+import { useToast } from '../../hooks/toast';
 
 interface Inputs {
   username: string;
@@ -26,40 +30,55 @@ export const SignIn: React.FC = () => {
   } = useForm<Inputs>();
 
   const { signIn } = useAuth();
+  const { createToast } = useToast();
 
   const navigate = useHistory();
 
   const onSubmit: SubmitHandler<Inputs> = useCallback(
     async ({ username, password }) => {
-      const signInSuccessful = await signIn({ username, password });
+      try {
+        const signInSuccessful = await signIn({ username, password });
 
-      if (signInSuccessful) {
-        return navigate.push('/game-form');
+        if (signInSuccessful) {
+          return navigate.push('/game-form');
+        }
+      } catch (err) {
+        createToast({
+          type: 'error',
+          title: 'Erro na autenticação',
+          description: 'Usuário ou senha incorreto, verificar credenciais',
+        });
       }
     },
-    [signIn, navigate],
+    [signIn, navigate, createToast],
   );
 
   return (
     <Container>
       <Content>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <h1>Faça seu login</h1>
+          <h1>Faça seu Login</h1>
 
           <Input
             rightIcon={FiUser}
             colorIcon="#FFFFFF"
             placeholder="Username"
-            {...register('username')}
+            errorMessage={errors.username?.message}
+            {...register('username', {
+              required: 'O nome de usuário é obrigatório',
+            })}
           />
+
           <Input
             rightIcon={FiLock}
             colorIcon="#FFFFFF"
             type="password"
             placeholder="Senha"
-            {...register('password')}
+            errorMessage={errors.password?.message}
+            {...register('password', {
+              required: 'A senha é obrigatória',
+            })}
           />
-          {errors.username && <span>This field is required</span>}
 
           <Button type="submit">Entrar</Button>
         </form>

@@ -65,8 +65,6 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
 
       localStorage.setItem('@Game-Organizer:user', JSON.stringify(user));
       setData({ ...data, user });
-    } else {
-      alert(response.statusText);
     }
   }, [data]);
 

@@ -1,5 +1,6 @@
 import { IconBaseProps } from 'react-icons/lib';
 import styled from 'styled-components';
+import { ToolTip } from '../Tooltip';
 
 interface ContainerProps {
   leftIcon: React.ComponentType<IconBaseProps> | undefined;
@@ -43,5 +44,22 @@ export const Container = styled.div<ContainerProps>`
   & > button:last-child {
     margin-left: 1.6rem;
   }
+`;
 
+export const Error = styled(ToolTip)`
+  height: 20px;
+  margin-left: 16px;
+
+  svg {
+    margin: 0;
+  }
+
+  span {
+    background: #c53030;
+    color: #fff;
+
+    &::before {
+      border-color: #c53030 transparent;
+    }
+  }
 `;

@@ -7,7 +7,7 @@ import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 
 import { Container, Content } from './styles';
-import { useAuth } from '../../hooks/Auth';
+import { useAuth } from '../../hooks/auth';
 
 interface Inputs {
   username: string;
@@ -50,16 +50,21 @@ export const SignUp: React.FC = () => {
             rightIcon={FiUser}
             colorIcon="#FFFFFF"
             placeholder="Username"
-            {...register('username')}
+            errorMessage={errors.username?.message}
+            {...register('username', {
+              required: 'O nome de usuário é obrigatório',
+            })}
           />
           <Input
             rightIcon={FiLock}
             colorIcon="#FFFFFF"
             type="password"
             placeholder="Senha"
-            {...register('password')}
+            errorMessage={errors.password?.message}
+            {...register('password', {
+              required: 'A senha é obrigatória',
+            })}
           />
-          {errors.username && <span>This field is required</span>}
 
           <Button type="submit">Criar</Button>
         </form>
