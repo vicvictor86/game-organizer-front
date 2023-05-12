@@ -30,6 +30,7 @@ interface AuthContextData {
   signIn(credentials: signInCredentials): Promise<boolean>;
   signOut(): void;
   signUp(credentials: SignUpCredentials): Promise<boolean>;
+  getUserUpdate(userId: string): Promise<void>;
 }
 
 interface AuthProviderData {
@@ -51,6 +52,19 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
 
     return {} as AuthState;
   });
+
+  const getUserUpdate = useCallback(async (userId: string): Promise<void> => {
+    const response = await api.get(`users/${userId}`);
+
+    if (response.status === 200) {
+      const { user } = response.data;
+
+      localStorage.setItem('@Game-Organizer:user', JSON.stringify(user));
+      setData({ ...data, user });
+    } else {
+      alert(response.statusText);
+    }
+  }, [data]);
 
   const signIn = useCallback(
     async ({ username, password }: signInCredentials): Promise<boolean> => {
@@ -109,6 +123,7 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
         signIn,
         signOut,
         signUp,
+        getUserUpdate,
       }}
     >
       {children}
