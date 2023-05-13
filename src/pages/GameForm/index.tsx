@@ -101,6 +101,12 @@ export const GameForm: React.FC = () => {
 
       setGameInfo(gameInfoData as GameInfo);
       setLoadingVisible(false);
+
+      createToast({
+        type: 'success',
+        title: 'Jogo adicionado com sucesso',
+        description: `O jogo ${gameInfoData.name} foi adicionado com sucesso`,
+      });
     } catch (err) {
       if (err instanceof AxiosError) {
         const errorMessage: string = err.response?.data.message;
