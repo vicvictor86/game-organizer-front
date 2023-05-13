@@ -5,6 +5,8 @@ import { useHistory } from 'react-router-dom';
 import { SiNotion } from 'react-icons/si';
 import { FiLogOut } from 'react-icons/fi';
 
+import { AxiosError } from 'axios';
+
 import { api } from '../../services/api';
 
 import {
@@ -34,6 +36,15 @@ interface GameInfo {
     completionist: string;
   }
 }
+
+interface ErrorDescriptions {
+  [key: string]: string;
+}
+
+const errorDescriptions: ErrorDescriptions = {
+  'Game already exists': 'Você já adicionou esse jogo',
+  'Game not found': 'O jogo adicionado não foi encontrado',
+};
 
 export const GameForm: React.FC = () => {
   const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
@@ -66,30 +77,44 @@ export const GameForm: React.FC = () => {
   const onSubmit: SubmitHandler<Inputs> = useCallback(async ({ title }) => {
     setLoadingVisible(true);
 
-    const response = await api.post(
-      '/games',
-      {
-        title,
-      },
-      {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
+    try {
+      const response = await api.post(
+        '/games',
+        {
+          title,
         },
-      },
-    );
+        {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
+          },
+        },
+      );
 
-    const dateFormatted = new Date(response.data.releaseDate).toLocaleDateString('pt-BR');
+      const dateFormatted = new Date(response.data.releaseDate).toLocaleDateString('pt-BR');
 
-    const gameInfoData = {
-      name: response.data.name,
-      platforms: response.data.platforms,
-      releaseDate: dateFormatted,
-      timeToBeat: response.data.timeToBeat,
-    } as GameInfo;
+      const gameInfoData = {
+        name: response.data.name,
+        platforms: response.data.platforms,
+        releaseDate: dateFormatted,
+        timeToBeat: response.data.timeToBeat,
+      } as GameInfo;
 
-    setGameInfo(gameInfoData as GameInfo);
-    setLoadingVisible(false);
-  }, []);
+      setGameInfo(gameInfoData as GameInfo);
+      setLoadingVisible(false);
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const errorMessage: string = err.response?.data.message;
+
+        createToast({
+          type: 'error',
+          title: 'Erro ao adicionar novo jogo',
+          description: errorDescriptions[errorMessage] || 'Erro desconhecido',
+        });
+      }
+
+      setLoadingVisible(false);
+    }
+  }, [createToast]);
 
   const alertToConnect = useCallback(() => {
     if (!connectedWithNotion) {
@@ -138,9 +163,10 @@ export const GameForm: React.FC = () => {
               readOnly={!connectedWithNotion}
               placeholder="Título do jogo"
               errorMessage={errors.title?.message}
-              {...register('title')}
+              {...register('title', {
+                required: 'Adicione o nome do jogo',
+              })}
             />
-            {errors.title && <span>This field is required</span>}
 
             <Button disabled={!connectedWithNotion || loadingVisible} type="submit">Enviar para o Notion</Button>
           </form>

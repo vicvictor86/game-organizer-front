@@ -115,7 +115,7 @@ export const InsertGameForm = styled.div<InsertGameFormProps>`
       color: #FFFFFF;
     }
 
-    div {
+    > div {
       width: 80%;
       background-color: rgba(255, 255, 255, 0.1);
     }

@@ -67,7 +67,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
       )}
       {errorMessage && (
         <Error title={errorMessage}>
-          <FiAlertCircle color="#c53030" />
+          <FiAlertCircle color="#c53030" size={22} />
         </Error>
       )}
     </Container>
