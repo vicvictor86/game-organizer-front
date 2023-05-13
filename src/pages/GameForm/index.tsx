@@ -10,6 +10,7 @@ import { AxiosError } from 'axios';
 import { api } from '../../services/api';
 
 import {
+  AnimationContainer,
   Container, Content, GameInfo, GameInfos, InsertGameForm, Logout, TopBarMenu,
 } from './styles';
 
@@ -146,57 +147,59 @@ export const GameForm: React.FC = () => {
   return (
     <Container>
       <Content>
-        <TopBarMenu connectedWithNotion={connectedWithNotion}>
-          <Logout>
-            <Button icon={FiLogOut} color="#ffffff" onClick={handleSignOut}>
-              Logout
-            </Button>
-          </Logout>
-          <h1>
-            Olá {user.username}, seja bem vindo
-          </h1>
-          <a href={process.env.REACT_APP_AUTHORIZATION_URL}>
-            <SiNotion size={18} />
-            {connectedWithNotion ? 'Conexão com o notion completa' : 'Conectar com o Notion'}
-          </a>
-        </TopBarMenu>
-        <InsertGameForm connectedWithNotion={connectedWithNotion} loadingVisible={loadingVisible}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <h1>Adicione o jogo no seu Notion</h1>
+        <AnimationContainer>
+          <TopBarMenu connectedWithNotion={connectedWithNotion}>
+            <Logout>
+              <Button icon={FiLogOut} color="#ffffff" onClick={handleSignOut}>
+                Logout
+              </Button>
+            </Logout>
+            <h1>
+              Olá {user.username}, seja bem vindo
+            </h1>
+            <a href={process.env.REACT_APP_AUTHORIZATION_URL}>
+              <SiNotion size={18} />
+              {connectedWithNotion ? 'Conexão com o notion completa' : 'Conectar com o Notion'}
+            </a>
+          </TopBarMenu>
+          <InsertGameForm connectedWithNotion={connectedWithNotion} loadingVisible={loadingVisible}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <h1>Adicione o jogo no seu Notion</h1>
 
-            <Input
-              onClick={alertToConnect}
-              readOnly={!connectedWithNotion}
-              placeholder="Título do jogo"
-              errorMessage={errors.title?.message}
-              {...register('title', {
-                required: 'Adicione o nome do jogo',
-              })}
-            />
+              <Input
+                onClick={alertToConnect}
+                readOnly={!connectedWithNotion}
+                placeholder="Título do jogo"
+                errorMessage={errors.title?.message}
+                {...register('title', {
+                  required: 'Adicione o nome do jogo',
+                })}
+              />
 
-            <Button disabled={!connectedWithNotion || loadingVisible} type="submit">Enviar para o Notion</Button>
-          </form>
-          <GameInfos>
-            {!loadingVisible && (
-              <>
-                <h1>Informações coletadas</h1>
-                <GameInfo containsData={!!gameInfo && !!gameInfo.name}>
-                  <p>Título: {gameInfo ? gameInfo.name : 'Título do jogo'}</p>
-                </GameInfo>
-                <GameInfo containsData={!!gameInfo && !!gameInfo.platforms}>
-                  Plataformas: {gameInfo ? showPlatforms() : 'Steam'}
-                </GameInfo>
-                <GameInfo containsData={!!gameInfo && !!gameInfo.releaseDate}>
-                  <p>Data de lançamento: {gameInfo ? gameInfo.releaseDate.substring(0, 10) : '25/12/2020'}</p>
-                </GameInfo>
-                <GameInfo containsData={!!gameInfo && !!gameInfo.timeToBeat}>
-                  <p>Tempo para zerar: {gameInfo ? `${gameInfo.timeToBeat.mainExtra} horas` : '40 horas'}</p>
-                </GameInfo>
-              </>
-            )}
-            {loadingVisible && <Loading />}
-          </GameInfos>
-        </InsertGameForm>
+              <Button disabled={!connectedWithNotion || loadingVisible} type="submit">Enviar para o Notion</Button>
+            </form>
+            <GameInfos>
+              {!loadingVisible && (
+                <>
+                  <h1>Informações coletadas</h1>
+                  <GameInfo containsData={!!gameInfo && !!gameInfo.name}>
+                    <p>Título: {gameInfo ? gameInfo.name : 'Título do jogo'}</p>
+                  </GameInfo>
+                  <GameInfo containsData={!!gameInfo && !!gameInfo.platforms}>
+                    Plataformas: {gameInfo ? showPlatforms() : 'Steam'}
+                  </GameInfo>
+                  <GameInfo containsData={!!gameInfo && !!gameInfo.releaseDate}>
+                    <p>Data de lançamento: {gameInfo ? gameInfo.releaseDate.substring(0, 10) : '25/12/2020'}</p>
+                  </GameInfo>
+                  <GameInfo containsData={!!gameInfo && !!gameInfo.timeToBeat}>
+                    <p>Tempo para zerar: {gameInfo ? `${gameInfo.timeToBeat.mainExtra} horas` : '40 horas'}</p>
+                  </GameInfo>
+                </>
+              )}
+              {loadingVisible && <Loading />}
+            </GameInfos>
+          </InsertGameForm>
+        </AnimationContainer>
       </Content>
     </Container>
   );

@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 interface GameInfoProps {
   containsData: boolean;
@@ -20,6 +20,15 @@ export const Container = styled.div`
   display: flex;
 `;
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
 export const Content = styled.div`
   display: flex;
   flex-direction: column;
@@ -38,11 +47,26 @@ export const Logout = styled.div`
   justify-content: start;
 `;
 
+export const AnimationContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  animation: ${fadeIn} 0.5s;
+`;
+
 export const TopBarMenu = styled.div<TopBarMenuProps>`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  animation: ${fadeIn} 0.5s;
 
   button {
     display: flex;
@@ -85,8 +109,6 @@ export const TopBarMenu = styled.div<TopBarMenuProps>`
       background-color: #4DB6AC;
     `}
   }
-
-
 `;
 
 export const InsertGameForm = styled.div<InsertGameFormProps>`
