@@ -8,7 +8,7 @@ import { FiLock, FiLogIn, FiUser } from 'react-icons/fi';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 
-import { Container, Content } from './styles';
+import { AnimationContainer, Container, Content } from './styles';
 
 import { useAuth } from '../../hooks/auth';
 import { useToast } from '../../hooks/toast';
@@ -56,37 +56,39 @@ export const SignIn: React.FC = () => {
   return (
     <Container>
       <Content>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <h1>Faça seu Login</h1>
+        <AnimationContainer>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <h1>Faça seu Login</h1>
 
-          <Input
-            rightIcon={FiUser}
-            colorIcon="#FFFFFF"
-            placeholder="Username"
-            errorMessage={errors.username?.message}
-            {...register('username', {
-              required: 'O nome de usuário é obrigatório',
-            })}
-          />
+            <Input
+              rightIcon={FiUser}
+              colorIcon="#FFFFFF"
+              placeholder="Username"
+              errorMessage={errors.username?.message}
+              {...register('username', {
+                required: 'O nome de usuário é obrigatório',
+              })}
+            />
 
-          <Input
-            rightIcon={FiLock}
-            colorIcon="#FFFFFF"
-            type="password"
-            placeholder="Senha"
-            errorMessage={errors.password?.message}
-            {...register('password', {
-              required: 'A senha é obrigatória',
-            })}
-          />
+            <Input
+              rightIcon={FiLock}
+              colorIcon="#FFFFFF"
+              type="password"
+              placeholder="Senha"
+              errorMessage={errors.password?.message}
+              {...register('password', {
+                required: 'A senha é obrigatória',
+              })}
+            />
 
-          <Button type="submit">Entrar</Button>
-        </form>
+            <Button type="submit">Entrar</Button>
+          </form>
 
-        <Button onClick={() => navigate.push('/sign-up')}>
-          <FiLogIn />
-          Criar Conta
-        </Button>
+          <Button onClick={() => navigate.push('/sign-up')}>
+            <FiLogIn />
+            Criar Conta
+          </Button>
+        </AnimationContainer>
       </Content>
     </Container>
   );
