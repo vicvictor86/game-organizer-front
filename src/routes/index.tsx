@@ -13,7 +13,7 @@ const Routes: React.FC = () => (
     <Route path="/" exact component={SignIn} />
     <Route path="/sign-up" component={SignUp} />
     <Route path="/game-form" component={GameForm} isPrivate />
-    <Route path="/integration" component={Integration} />
+    <Route path="/integration" component={Integration} isPrivate />
   </Switch>
 );
 
