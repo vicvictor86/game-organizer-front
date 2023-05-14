@@ -28,6 +28,12 @@ export const Integration: React.FC = () => {
         },
       }).then(() => {
         getUserUpdate(user.id);
+
+        createToast({
+          type: 'success',
+          title: 'Conexão com o notion feita com sucesso',
+        });
+
         navigate.push('game-form');
       });
     } catch (err) {
