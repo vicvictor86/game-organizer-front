@@ -26,21 +26,18 @@ export const Integration: React.FC = () => {
         headers: {
           authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
         },
-      }).then((response) => {
+      }).then(() => {
         getUserUpdate(user.id);
-
-        console.log(response);
 
         createToast({
           type: 'success',
           title: 'Conexão com o notion feita com sucesso',
         });
 
-        // navigate.push('game-form');
+        navigate.push('game-form');
       });
     } catch (err) {
-      // navigate.push('game-form');
-      console.log(err);
+      navigate.push('game-form');
 
       createToast({
         type: 'error',
