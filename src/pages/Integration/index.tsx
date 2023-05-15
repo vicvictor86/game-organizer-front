@@ -15,7 +15,7 @@ export const Integration: React.FC = () => {
 
   const navigate = useHistory();
 
-  const { getUserUpdate, user } = useAuth();
+  const { getUserUpdate } = useAuth();
   const { createToast } = useToast();
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export const Integration: React.FC = () => {
           authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
         },
       }).then(() => {
-        getUserUpdate(user.id);
+        getUserUpdate();
 
         createToast({
           type: 'success',

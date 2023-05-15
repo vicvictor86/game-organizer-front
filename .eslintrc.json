@@ -19,6 +19,7 @@
     "react-hooks"
   ],
   "rules": {
+    "jsx-a11y/label-has-associated-control": "off",
     "react/jsx-one-expression-per-line": "off",
     "import/no-extraneous-dependencies": "off",
     "react/jsx-props-no-spreading": "off",
