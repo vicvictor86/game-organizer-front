@@ -12,10 +12,28 @@ interface UserSettings {
   statusName: string;
 }
 
+interface NotionUSerConnection {
+  id: string;
+  botId: string;
+  duplicatedTemplateId?: string;
+  ownerId: string;
+  userId: string;
+
+  workspaceIcon?: string;
+  workspaceId: string;
+  workspaceName: string;
+
+  gameDatabaseId: string;
+  platformDatabaseId: string;
+
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface UserProps {
   id: string;
   username: string;
-  notionUserConnections: object[];
+  notionUserConnections: NotionUSerConnection[];
 }
 
 interface AuthState {

@@ -29,6 +29,7 @@ import { useToast } from '../../hooks/toast';
 
 interface Inputs {
   title: string;
+  pageId: string;
 }
 
 interface GameInfo {
@@ -48,7 +49,7 @@ interface ErrorDescriptions {
   [key: string]: string;
 }
 
-interface DatabaseOptions {
+interface NotionPagesOptions {
   id: string;
   name: string;
   label: string;
@@ -63,24 +64,46 @@ export const GameForm: React.FC = () => {
   const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
   const [connectedWithNotion, setConnectedWithNotion] = useState<boolean>(false);
   const [loadingVisible, setLoadingVisible] = useState<boolean>(false);
-  const [databaseOptions, setdatabaseOptions] = useState<DatabaseOptions[]>([]);
+  const [notionPages, setNotionPages] = useState<NotionPagesOptions[]>([]);
 
   const navigate = useHistory();
 
   const { user, signOut } = useAuth();
   const { createToast } = useToast();
 
+  const getNotionPages = useCallback(async () => api.get<any[]>('info', {
+    headers: {
+      authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
+    },
+  }), []);
+
   useEffect(() => {
     document.title = 'Adicione seu jogo';
-
-    setdatabaseOptions([
-      { id: 'id-database-1', name: 'database 1', label: 'database 1' },
-      { id: 'id-database-2', name: 'database 1', label: 'database 2' },
-      { id: 'id-database-3', name: 'database 1', label: 'database 3' },
-    ]);
-
     setConnectedWithNotion(user.notionUserConnections.length > 0);
-  }, [user]);
+
+    try {
+      getNotionPages().then((response) => {
+        const pagesInfo = response.data;
+
+        const notionPagesInfo = pagesInfo.map((pageInfo) => {
+          const pageName = pageInfo.properties.title.title[0].text.content;
+          return { id: pageInfo.id, label: pageName, name: pageName } as NotionPagesOptions;
+        });
+
+        setNotionPages(notionPagesInfo);
+      });
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const errorMessage: string = err.response?.data.message;
+
+        createToast({
+          type: 'error',
+          title: 'Erro ao adicionar novo jogo',
+          description: errorDescriptions[errorMessage] || 'Erro desconhecido',
+        });
+      }
+    }
+  }, [user, getNotionPages, createToast]);
 
   const {
     register,
@@ -95,7 +118,7 @@ export const GameForm: React.FC = () => {
   }, [navigate, signOut]);
 
   const onSubmit: SubmitHandler<Inputs> = useCallback(
-    async ({ title }) => {
+    async ({ title, pageId }) => {
       setLoadingVisible(true);
 
       try {
@@ -103,6 +126,7 @@ export const GameForm: React.FC = () => {
           '/games',
           {
             title,
+            pageId,
           },
           {
             headers: {
@@ -202,19 +226,21 @@ export const GameForm: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <h1>Adicione o jogo no seu Notion</h1>
 
-              <label htmlFor="selected-database">
+              <label htmlFor="selected-page">
                 Qual página você quer adicionar seu jogo ?
               </label>
               <select
-                name="database"
-                id="selected-database"
-                aria-label="selected-database"
+                id="selected-page"
+                aria-label="selected-page"
+                {...register('pageId')}
               >
-                {databaseOptions
-                  && databaseOptions.map((databaseOption) => (
+                {notionPages
+                  && notionPages.map((databaseOption) => (
                     <option
+                      key={databaseOption.id}
                       value={databaseOption.id}
                       label={databaseOption.label}
+                      disabled={!connectedWithNotion || loadingVisible}
                     >
                       {databaseOption.name}
                     </option>
