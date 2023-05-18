@@ -20,7 +20,7 @@ import {
   TopBarMenu,
 } from './styles';
 
-import { useAuth } from '../../hooks/auth';
+import { UserPages, useAuth } from '../../hooks/auth';
 
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
@@ -71,45 +71,36 @@ export const GameForm: React.FC = () => {
   const { user, signOut } = useAuth();
   const { createToast } = useToast();
 
-  const getNotionPages = useCallback(async () => api.get<any[]>('info', {
-    headers: {
-      authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
-    },
-  }), []);
-
   useEffect(() => {
     document.title = 'Adicione seu jogo';
     setConnectedWithNotion(user.notionUserConnections.length > 0);
 
-    try {
-      getNotionPages().then((response) => {
-        const pagesInfo = response.data;
+    const pagesInfo = localStorage.getItem('@Game-Organizer:user-pages');
 
-        const notionPagesInfo = pagesInfo.map((pageInfo) => {
-          const pageName = pageInfo.properties.title.title[0].text.content;
-          return { id: pageInfo.id, label: pageName, name: pageName } as NotionPagesOptions;
-        });
+    if (pagesInfo) {
+      const pagesInfoParsed = JSON.parse(pagesInfo) as UserPages[];
 
-        setNotionPages(notionPagesInfo);
+      const notionPagesInfo = pagesInfoParsed.map((pageInfo) => {
+        const pageName = pageInfo.title;
+        return { id: pageInfo.id, label: pageName, name: pageName } as NotionPagesOptions;
       });
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        const errorMessage: string = err.response?.data.message;
 
-        createToast({
-          type: 'error',
-          title: 'Erro ao adicionar novo jogo',
-          description: errorDescriptions[errorMessage] || 'Erro desconhecido',
-        });
-      }
+      setNotionPages(notionPagesInfo);
     }
-  }, [user, getNotionPages, createToast]);
+  }, [user, createToast]);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<Inputs>();
+
+  useEffect(() => {
+    if (notionPages[0]) {
+      setValue('pageId', notionPages[0].id);
+    }
+  }, [notionPages, setValue]);
 
   const handleSignOut = useCallback(() => {
     signOut();
@@ -229,13 +220,14 @@ export const GameForm: React.FC = () => {
               <label htmlFor="selected-page">
                 Qual página você quer adicionar seu jogo ?
               </label>
-              <select
-                id="selected-page"
-                aria-label="selected-page"
-                {...register('pageId')}
-              >
-                {notionPages
-                  && notionPages.map((databaseOption) => (
+              {notionPages
+                && (
+                <select
+                  id="selected-page"
+                  aria-label="selected-page"
+                  {...register('pageId')}
+                >
+                  {notionPages.map((databaseOption) => (
                     <option
                       key={databaseOption.id}
                       value={databaseOption.id}
@@ -245,7 +237,8 @@ export const GameForm: React.FC = () => {
                       {databaseOption.name}
                     </option>
                   ))}
-              </select>
+                </select>
+                )}
 
               <label htmlFor="game-title">Nome do jogo</label>
               <Input

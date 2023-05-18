@@ -36,10 +36,16 @@ export interface UserProps {
   notionUserConnections: NotionUSerConnection[];
 }
 
+export interface UserPages {
+  id: string;
+  title: string;
+}
+
 interface AuthState {
   token: string;
   user: UserProps;
   userSettings: UserSettings;
+  userPages: UserPages[];
 }
 
 interface signInCredentials {
@@ -75,9 +81,15 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
     const token = localStorage.getItem('@Game-Organizer:jwt-token');
     const user = localStorage.getItem('@Game-Organizer:user');
     const userSettings = localStorage.getItem('@Game-Organizer:user-settings');
+    const userPages = localStorage.getItem('@Game-Organizer:user-pages');
 
-    if (token && user && userSettings) {
-      return { token, user: JSON.parse(user), userSettings: JSON.parse(userSettings) };
+    if (token && user && userSettings && userPages) {
+      return {
+        token,
+        user: JSON.parse(user),
+        userSettings: JSON.parse(userSettings),
+        userPages: JSON.parse(userPages),
+      };
     }
 
     return {} as AuthState;
@@ -109,15 +121,20 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
         return false;
       }
 
-      const { token, user, userSettings } = response.data;
+      const {
+        token, user, userSettings, userPages,
+      } = response.data;
 
       api.defaults.headers.authorization = `Bearer ${token}`;
 
       localStorage.setItem('@Game-Organizer:jwt-token', token);
       localStorage.setItem('@Game-Organizer:user', JSON.stringify(user));
       localStorage.setItem('@Game-Organizer:user-settings', JSON.stringify(userSettings));
+      localStorage.setItem('@Game-Organizer:user-pages', JSON.stringify(userPages));
 
-      setData({ token, user, userSettings });
+      setData({
+        token, user, userSettings, userPages,
+      });
 
       return true;
     },
