@@ -84,9 +84,7 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
     const userPages = localStorage.getItem('@Game-Organizer:user-pages');
 
     if (token && user && userSettings) {
-      console.log(typeof userPages);
       if (userPages) {
-        console.log('aaaaaaa');
         return {
           token,
           user: JSON.parse(user),
@@ -106,16 +104,17 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
   });
 
   const getUserUpdate = useCallback(async (): Promise<void> => {
-    const response = await api.get('users/', {
+    const response = await api.get('/integration/info', {
       headers: {
         authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
       },
     });
 
     if (response.status === 200) {
-      const { user } = response.data;
+      const { user, userPages } = response.data;
 
       localStorage.setItem('@Game-Organizer:user', JSON.stringify(user));
+      localStorage.setItem('@Game-Organizer:user-pages', JSON.stringify(userPages));
       setData({ ...data, user });
     }
   }, [data]);
