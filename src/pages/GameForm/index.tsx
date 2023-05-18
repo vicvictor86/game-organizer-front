@@ -223,6 +223,7 @@ export const GameForm: React.FC = () => {
               {notionPages
                 && (
                 <select
+                  disabled={notionPages.length === 0}
                   id="selected-page"
                   aria-label="selected-page"
                   {...register('pageId')}

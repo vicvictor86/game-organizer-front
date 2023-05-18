@@ -45,7 +45,7 @@ interface AuthState {
   token: string;
   user: UserProps;
   userSettings: UserSettings;
-  userPages: UserPages[];
+  userPages?: UserPages[];
 }
 
 interface signInCredentials {
@@ -83,12 +83,22 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
     const userSettings = localStorage.getItem('@Game-Organizer:user-settings');
     const userPages = localStorage.getItem('@Game-Organizer:user-pages');
 
-    if (token && user && userSettings && userPages) {
+    if (token && user && userSettings) {
+      console.log(typeof userPages);
+      if (userPages) {
+        console.log('aaaaaaa');
+        return {
+          token,
+          user: JSON.parse(user),
+          userSettings: JSON.parse(userSettings),
+          userPages: JSON.parse(userPages),
+        };
+      }
+
       return {
         token,
         user: JSON.parse(user),
         userSettings: JSON.parse(userSettings),
-        userPages: JSON.parse(userPages),
       };
     }
 
@@ -130,7 +140,10 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
       localStorage.setItem('@Game-Organizer:jwt-token', token);
       localStorage.setItem('@Game-Organizer:user', JSON.stringify(user));
       localStorage.setItem('@Game-Organizer:user-settings', JSON.stringify(userSettings));
-      localStorage.setItem('@Game-Organizer:user-pages', JSON.stringify(userPages));
+
+      if (userPages) {
+        localStorage.setItem('@Game-Organizer:user-pages', JSON.stringify(userPages));
+      }
 
       setData({
         token, user, userSettings, userPages,
