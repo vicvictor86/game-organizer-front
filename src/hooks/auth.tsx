@@ -157,6 +157,7 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
     localStorage.removeItem('@Game-Organizer:jwt-token');
     localStorage.removeItem('@Game-Organizer:user');
     localStorage.removeItem('@Game-Organizer:user-settings');
+    localStorage.removeItem('@Game-Organizer:user-pages');
 
     setData({} as AuthState);
   }, []);
