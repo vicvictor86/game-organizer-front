@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
+import { Helmet } from 'react-helmet';
 import { api } from '../../services/api';
 
 import { useAuth } from '../../hooks/auth';
@@ -19,8 +20,6 @@ export const Integration: React.FC = () => {
   const { createToast } = useToast();
 
   useEffect(() => {
-    document.title = 'Integração';
-
     try {
       api.get(`integration?code=${searchParams.get('code')}`, {
         headers: {
@@ -49,6 +48,9 @@ export const Integration: React.FC = () => {
 
   return (
     <Container>
+      <Helmet>
+        <title>Entre na sua conta</title>
+      </Helmet>
       <div>
         <h1>Conectando</h1>
         <Loading svgColor="light" />
