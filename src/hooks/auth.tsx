@@ -2,17 +2,50 @@
 import React, {
   createContext, useCallback, useContext, useState,
 } from 'react';
+
 import { api } from '../services/api';
+
+interface UserSettings {
+  id: string;
+  userId: string;
+  lastDatabaseSelectedId?: string;
+  statusName: string;
+}
+
+interface NotionUSerConnection {
+  id: string;
+  botId: string;
+  duplicatedTemplateId?: string;
+  ownerId: string;
+  userId: string;
+
+  workspaceIcon?: string;
+  workspaceId: string;
+  workspaceName: string;
+
+  gameDatabaseId: string;
+  platformDatabaseId: string;
+
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface UserProps {
   id: string;
   username: string;
-  notionUserConnections: object[];
+  notionUserConnections: NotionUSerConnection[];
+}
+
+export interface UserPages {
+  id: string;
+  title: string;
 }
 
 interface AuthState {
   token: string;
   user: UserProps;
+  userSettings: UserSettings;
+  userPages?: UserPages[];
 }
 
 interface signInCredentials {
@@ -27,10 +60,12 @@ interface SignUpCredentials {
 
 interface AuthContextData {
   user: UserProps;
+  userSettings: UserSettings;
   signIn(credentials: signInCredentials): Promise<boolean>;
   signOut(): void;
   signUp(credentials: SignUpCredentials): Promise<boolean>;
-  getUserUpdate(userId: string): Promise<void>;
+  getUserUpdate(): Promise<void>;
+  updateUserSettings(statusName: string): Promise<void>;
 }
 
 interface AuthProviderData {
@@ -45,16 +80,33 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
   const [data, setData] = useState<AuthState>(() => {
     const token = localStorage.getItem('@Game-Organizer:jwt-token');
     const user = localStorage.getItem('@Game-Organizer:user');
+    const userSettings = localStorage.getItem('@Game-Organizer:user-settings');
+    const userPages = localStorage.getItem('@Game-Organizer:user-pages');
 
-    if (token && user) {
-      return { token, user: JSON.parse(user) };
+    if (token && user && userSettings) {
+      console.log(typeof userPages);
+      if (userPages) {
+        console.log('aaaaaaa');
+        return {
+          token,
+          user: JSON.parse(user),
+          userSettings: JSON.parse(userSettings),
+          userPages: JSON.parse(userPages),
+        };
+      }
+
+      return {
+        token,
+        user: JSON.parse(user),
+        userSettings: JSON.parse(userSettings),
+      };
     }
 
     return {} as AuthState;
   });
 
-  const getUserUpdate = useCallback(async (userId: string): Promise<void> => {
-    const response = await api.get(`users/${userId}`, {
+  const getUserUpdate = useCallback(async (): Promise<void> => {
+    const response = await api.get('users/', {
       headers: {
         authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
       },
@@ -79,14 +131,23 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
         return false;
       }
 
-      const { token, user } = response.data;
+      const {
+        token, user, userSettings, userPages,
+      } = response.data;
 
       api.defaults.headers.authorization = `Bearer ${token}`;
 
       localStorage.setItem('@Game-Organizer:jwt-token', token);
       localStorage.setItem('@Game-Organizer:user', JSON.stringify(user));
+      localStorage.setItem('@Game-Organizer:user-settings', JSON.stringify(userSettings));
 
-      setData({ token, user });
+      if (userPages) {
+        localStorage.setItem('@Game-Organizer:user-pages', JSON.stringify(userPages));
+      }
+
+      setData({
+        token, user, userSettings, userPages,
+      });
 
       return true;
     },
@@ -96,6 +157,7 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
   const signOut = useCallback(() => {
     localStorage.removeItem('@Game-Organizer:jwt-token');
     localStorage.removeItem('@Game-Organizer:user');
+    localStorage.removeItem('@Game-Organizer:user-settings');
 
     setData({} as AuthState);
   }, []);
@@ -118,10 +180,31 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
     [signIn],
   );
 
+  const updateUserSettings = useCallback(async (statusName: string): Promise<void> => {
+    const response = await api.put('users/settings', {
+      statusName,
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem(
+          '@Game-Organizer:jwt-token',
+        )}`,
+      },
+    });
+
+    if (response.status === 200) {
+      const userSettings = response.data;
+
+      localStorage.setItem('@Game-Organizer:user-settings', JSON.stringify(userSettings));
+      setData({ ...data, userSettings });
+    }
+  }, [data]);
+
   return (
     <AuthContext.Provider
       value={{
         user: data.user,
+        userSettings: data.userSettings,
+        updateUserSettings,
         signIn,
         signOut,
         signUp,
