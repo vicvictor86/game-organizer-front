@@ -26,6 +26,8 @@ export const Integration: React.FC = () => {
           authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
         },
       }).then(() => {
+        getUserUpdate();
+
         createToast({
           type: 'success',
           title: 'Conexão com o notion feita com sucesso',

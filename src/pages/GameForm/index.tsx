@@ -69,11 +69,10 @@ export const GameForm: React.FC = () => {
 
   const navigate = useHistory();
 
-  const { user, signOut, getUserUpdate } = useAuth();
+  const { user, signOut } = useAuth();
   const { createToast } = useToast();
 
   useEffect(() => {
-    getUserUpdate();
     setConnectedWithNotion(user.notionUserConnections.length > 0);
 
     const pagesInfo = localStorage.getItem('@Game-Organizer:user-pages');
