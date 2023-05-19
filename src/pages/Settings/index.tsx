@@ -7,6 +7,7 @@ import { FiArrowLeft } from 'react-icons/fi';
 
 import { AxiosError } from 'axios';
 
+import { Helmet } from 'react-helmet';
 import { api } from '../../services/api';
 
 import {
@@ -43,12 +44,10 @@ export const Settings: React.FC = () => {
 
   const navigate = useHistory();
 
-  const { user, userSettings, updateUserSettings } = useAuth();
+  const { user, updateUserSettings } = useAuth();
   const { createToast } = useToast();
 
   useEffect(() => {
-    document.title = 'Configurações do usuário';
-
     setConnectedWithNotion(user.notionUserConnections.length > 0);
   }, [user]);
 
@@ -101,6 +100,9 @@ export const Settings: React.FC = () => {
 
   return (
     <Container>
+      <Helmet>
+        <title>Entre na sua conta</title>
+      </Helmet>
       <Content>
         <AnimationContainer>
           <TopBarMenu connectedWithNotion={connectedWithNotion}>

@@ -1,7 +1,8 @@
 /* eslint-disable consistent-return */
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { Helmet } from 'react-helmet';
 
 import { FiLock, FiLogIn, FiUser } from 'react-icons/fi';
 
@@ -19,10 +20,6 @@ interface Inputs {
 }
 
 export const SignIn: React.FC = () => {
-  useEffect(() => {
-    document.title = 'Entre na sua conta';
-  });
-
   const {
     register,
     handleSubmit,
@@ -55,6 +52,9 @@ export const SignIn: React.FC = () => {
 
   return (
     <Container>
+      <Helmet>
+        <title>Entre na sua conta</title>
+      </Helmet>
       <Content>
         <AnimationContainer>
           <form onSubmit={handleSubmit(onSubmit)}>

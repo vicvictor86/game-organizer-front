@@ -7,6 +7,7 @@ import { FiLogOut, FiSettings } from 'react-icons/fi';
 
 import { AxiosError } from 'axios';
 
+import { Helmet } from 'react-helmet';
 import { api } from '../../services/api';
 
 import {
@@ -68,11 +69,11 @@ export const GameForm: React.FC = () => {
 
   const navigate = useHistory();
 
-  const { user, signOut } = useAuth();
+  const { user, signOut, getUserUpdate } = useAuth();
   const { createToast } = useToast();
 
   useEffect(() => {
-    document.title = 'Adicione seu jogo';
+    getUserUpdate();
     setConnectedWithNotion(user.notionUserConnections.length > 0);
 
     const pagesInfo = localStorage.getItem('@Game-Organizer:user-pages');
@@ -187,6 +188,9 @@ export const GameForm: React.FC = () => {
 
   return (
     <Container>
+      <Helmet>
+        <title>Entre na sua conta</title>
+      </Helmet>
       <Content>
         <AnimationContainer>
           <TopBarMenu connectedWithNotion={connectedWithNotion}>
