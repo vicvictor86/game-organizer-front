@@ -23,7 +23,7 @@ import {
 
 import { UserPages, useAuth } from '../../hooks/auth';
 
-import { Input } from '../../components/Input';
+import { AutoCompleteInput, Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { Loading } from '../../components/Loading';
 import { useToast } from '../../hooks/toast';
@@ -66,6 +66,28 @@ export const GameForm: React.FC = () => {
   const [connectedWithNotion, setConnectedWithNotion] = useState<boolean>(false);
   const [loadingVisible, setLoadingVisible] = useState<boolean>(false);
   const [notionPages, setNotionPages] = useState<NotionPagesOptions[]>([]);
+  const autoCompleteTest = [
+    {
+      key: 'john',
+      value: 'John Doe',
+    },
+    {
+      key: 'jane',
+      value: 'Jane Doe',
+    },
+    {
+      key: 'mary',
+      value: 'Mary Phillips',
+    },
+    {
+      key: 'robert',
+      value: 'Robert',
+    },
+    {
+      key: 'karius',
+      value: 'Karius',
+    },
+  ];
 
   const navigate = useHistory();
 
@@ -73,7 +95,7 @@ export const GameForm: React.FC = () => {
   const { createToast } = useToast();
 
   useEffect(() => {
-    setConnectedWithNotion(user.notionUserConnections.length > 0);
+    setConnectedWithNotion(true);
 
     const pagesInfo = localStorage.getItem('@Game-Organizer:user-pages');
 
@@ -245,7 +267,7 @@ export const GameForm: React.FC = () => {
                 )}
 
               <label htmlFor="game-title">Nome do jogo</label>
-              <Input
+              <AutoCompleteInput
                 id="game-title"
                 onClick={alertToConnect}
                 readOnly={!connectedWithNotion}

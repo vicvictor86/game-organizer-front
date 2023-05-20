@@ -155,7 +155,7 @@ export const InsertGameForm = styled.div<InsertGameFormProps>`
       background-color: rgba(255, 255, 255, 0.1);
     }
 
-    div + div {
+    > div + div {
       margin-top: 0.8rem;
     }
 
