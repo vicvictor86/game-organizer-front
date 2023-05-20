@@ -63,3 +63,27 @@ export const Error = styled(ToolTip)`
     }
   }
 `;
+
+export const Suggestions = styled.div`
+  border: 1px solid #707991;
+  border-radius: 0.8rem;
+
+  div:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const Suggestion = styled.div`
+  padding: 0.8rem 2rem;
+  border-bottom: 1px solid #707991;
+
+  p {
+    font-size: 1.4rem;
+    color: #ffffff;
+  }
+
+  &:hover {
+    background-color: #707991;
+    cursor: pointer;
+  }
+`;
