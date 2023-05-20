@@ -66,29 +66,6 @@ export const GameForm: React.FC = () => {
   const [connectedWithNotion, setConnectedWithNotion] = useState<boolean>(false);
   const [loadingVisible, setLoadingVisible] = useState<boolean>(false);
   const [notionPages, setNotionPages] = useState<NotionPagesOptions[]>([]);
-  const autoCompleteTest = [
-    {
-      key: 'john',
-      value: 'John Doe',
-    },
-    {
-      key: 'jane',
-      value: 'Jane Doe',
-    },
-    {
-      key: 'mary',
-      value: 'Mary Phillips',
-    },
-    {
-      key: 'robert',
-      value: 'Robert',
-    },
-    {
-      key: 'karius',
-      value: 'Karius',
-    },
-  ];
-
   const navigate = useHistory();
 
   const { user, signOut } = useAuth();

@@ -65,7 +65,6 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
         onBlur={handleInputBlur}
         onFocus={handleInputFocus}
         ref={ref}
-        type="text"
       />
       {RightIcon && !HasButton && <RightIcon size={24} color={ColorIcon} />}
       {RightIcon && HasButton && (
@@ -100,19 +99,10 @@ const AutoCompleteInputBase: ForwardRefRenderFunction<HTMLInputElement, InputPro
 
   const [debounceValue] = useDebounce(text, 1000);
   const [searchingForGame, setSearchingForGame] = useState<boolean>(false);
-
-  // const users = [
-  //   'zelda',
-  //   'teste2',
-  //   'outro teste',
-  //   'outro teste 2',
-  //   'outro teste 3',
-  //   'outro teste 4',
-  //   'outro teste 5',
-  // ];
+  const [gameWasSelected, setGameWasSelected] = useState<boolean>(false);
 
   useEffect(() => {
-    if (debounceValue && text) {
+    if (debounceValue && text && !gameWasSelected) {
       setSearchingForGame(true);
 
       api.get(`games/${text}`).then((response) => {
@@ -121,7 +111,7 @@ const AutoCompleteInputBase: ForwardRefRenderFunction<HTMLInputElement, InputPro
         setGamesInfo(gamesNames);
       });
     }
-  }, [text, debounceValue]);
+  }, [text, debounceValue, gameWasSelected]);
 
   const handleInputFocus = useCallback(() => {
     setIsFocused(true);
@@ -136,15 +126,14 @@ const AutoCompleteInputBase: ForwardRefRenderFunction<HTMLInputElement, InputPro
   }, []);
 
   const suggestHandler = useCallback(async (userTextInput: string) => {
+    setGameWasSelected(true);
     setText(userTextInput);
     setSuggestions([]);
-
-    // const response = await api.get(`games/${userTextInput}`);
-
-    // console.log(response);
   }, []);
 
   useEffect(() => {
+    if (gameWasSelected) return;
+
     let matches: string[] = [];
     if (text.length > 0) {
       matches = gamesInfo.filter((gameInfo) => {
@@ -153,27 +142,21 @@ const AutoCompleteInputBase: ForwardRefRenderFunction<HTMLInputElement, InputPro
       });
     }
 
-    console.log('Matches', matches);
-    console.log(gamesInfo);
-
-    setSuggestions(matches);
-  }, [gamesInfo, text]);
-
-  const handleChange = useCallback(async (userTextInput: string) => {
-    // let matches: string[] = [];
-    // if (userTextInput.length > 0) {
-    //   matches = gamesInfo.filter((gameInfo) => {
-    //     const regex = new RegExp(`${userTextInput}`, 'gi');
-    //     return gameInfo.match(regex);
-    //   });
-    // }
-
     // console.log('Matches', matches);
     // console.log(gamesInfo);
 
-    // setSuggestions(matches);
+    setSuggestions(matches);
+  }, [gamesInfo, text, gameWasSelected]);
+
+  const handleChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (rest && rest.onChange) {
+      rest.onChange(event);
+    }
+
+    const userTextInput = event.target.value;
     setText(userTextInput);
-  }, []);
+    setGameWasSelected(false);
+  }, [rest]);
 
   return (
     <>
@@ -190,9 +173,8 @@ const AutoCompleteInputBase: ForwardRefRenderFunction<HTMLInputElement, InputPro
           {...rest}
           onBlur={handleInputBlur}
           onFocus={handleInputFocus}
-          onChange={(event) => handleChange(event.target.value)}
+          onChange={(event) => handleChange(event)}
           ref={ref}
-          type="text"
           value={text}
         />
         {RightIcon && !HasButton && <RightIcon size={24} color={ColorIcon} />}
