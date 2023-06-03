@@ -73,6 +73,7 @@ export const GameForm: React.FC = () => {
 
   useEffect(() => {
     setConnectedWithNotion(user.notionUserConnections.length > 0);
+    // setConnectedWithNotion(true);
 
     const pagesInfo = localStorage.getItem('@Game-Organizer:user-pages');
 

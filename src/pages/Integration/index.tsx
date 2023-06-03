@@ -10,6 +10,11 @@ import { Loading } from '../../components/Loading';
 import { Container } from './styles';
 import { useToast } from '../../hooks/toast';
 
+interface IntegrationResponse {
+  notionUserConnection: any;
+  userPages: any;
+}
+
 export const Integration: React.FC = () => {
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
@@ -25,7 +30,9 @@ export const Integration: React.FC = () => {
         headers: {
           authorization: `Bearer ${localStorage.getItem('@Game-Organizer:jwt-token')}`,
         },
-      }).then(() => {
+      }).then((response: any) => {
+        localStorage.setItem('@Game-Organizer:user-pages', JSON.stringify(response.data.userPages));
+
         getUserUpdate();
 
         createToast({
