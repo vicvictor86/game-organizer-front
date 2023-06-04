@@ -111,11 +111,9 @@ export const AuthProvider: React.FC<AuthProviderData> = ({ children }) => {
     });
 
     if (response.status === 200) {
-      const { user, userPages } = response.data;
+      const { user } = response.data;
 
       localStorage.setItem('@Game-Organizer:user', JSON.stringify(user));
-      // localStorage.setItem('@Game-Organizer:user-pages', JSON.stringify(userPages));
-      localStorage.setItem('@Game-Organizer:integration-response', JSON.stringify(response));
       setData({ ...data, user });
     }
   }, [data]);

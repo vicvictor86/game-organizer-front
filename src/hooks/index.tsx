@@ -2,6 +2,7 @@ import React from 'react';
 
 import { AuthProvider } from './auth';
 import { ToastProvider } from './toast';
+import { GameInfoProvider } from './gameInfo';
 
 interface AppProviderProps {
   children: React.ReactNode;
@@ -10,7 +11,9 @@ interface AppProviderProps {
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => (
   <AuthProvider>
     <ToastProvider>
-      {children}
+      <GameInfoProvider>
+        {children}
+      </GameInfoProvider>
     </ToastProvider>
   </AuthProvider>
 );

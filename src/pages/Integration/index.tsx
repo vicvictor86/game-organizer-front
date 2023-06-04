@@ -10,11 +10,6 @@ import { Loading } from '../../components/Loading';
 import { Container } from './styles';
 import { useToast } from '../../hooks/toast';
 
-interface IntegrationResponse {
-  notionUserConnection: any;
-  userPages: any;
-}
-
 export const Integration: React.FC = () => {
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);

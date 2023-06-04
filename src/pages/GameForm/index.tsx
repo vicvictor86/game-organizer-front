@@ -27,6 +27,7 @@ import { AutoCompleteInput, Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { Loading } from '../../components/Loading';
 import { useToast } from '../../hooks/toast';
+import { useGameInfo } from '../../hooks/gameInfo';
 
 interface Inputs {
   title: string;
@@ -62,7 +63,6 @@ const errorDescriptions: ErrorDescriptions = {
 };
 
 export const GameForm: React.FC = () => {
-  const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
   const [connectedWithNotion, setConnectedWithNotion] = useState<boolean>(false);
   const [loadingVisible, setLoadingVisible] = useState<boolean>(false);
   const [notionPages, setNotionPages] = useState<NotionPagesOptions[]>([]);
@@ -70,10 +70,10 @@ export const GameForm: React.FC = () => {
 
   const { user, signOut } = useAuth();
   const { createToast } = useToast();
+  const { gameInfo } = useGameInfo();
 
   useEffect(() => {
     setConnectedWithNotion(user.notionUserConnections.length > 0);
-    // setConnectedWithNotion(true);
 
     const pagesInfo = localStorage.getItem('@Game-Organizer:user-pages');
 
@@ -139,7 +139,6 @@ export const GameForm: React.FC = () => {
           timeToBeat: response.data.timeToBeat,
         } as GameInfo;
 
-        setGameInfo(gameInfoData as GameInfo);
         setLoadingVisible(false);
 
         createToast({
@@ -176,6 +175,7 @@ export const GameForm: React.FC = () => {
 
   const showPlatforms = useCallback(() => {
     let platformsString = '';
+
     gameInfo?.platforms.forEach((platform) => {
       platformsString += `${platform.name}, `;
     });

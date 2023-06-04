@@ -16,6 +16,7 @@ import {
 import { Button } from '../Button/index';
 import { api } from '../../services/api';
 import { Loading } from '../Loading';
+import { GameInfo, useGameInfo } from '../../hooks/gameInfo';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   hasButton?: boolean;
@@ -94,21 +95,23 @@ const AutoCompleteInputBase: ForwardRefRenderFunction<HTMLInputElement, InputPro
 ) => {
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [text, setText] = useState<string>('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [gamesInfo, setGamesInfo] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<GameInfo[]>([]);
+  const [inputGamesInfo, setInputGamesInfo] = useState<GameInfo[]>([]);
 
   const [debounceValue] = useDebounce(text, 1000);
   const [searchingForGame, setSearchingForGame] = useState<boolean>(false);
   const [gameWasSelected, setGameWasSelected] = useState<boolean>(false);
 
+  const { updateGameInfo } = useGameInfo();
+
   useEffect(() => {
     if (debounceValue && text && !gameWasSelected) {
       setSearchingForGame(true);
 
-      api.get(`games/${text}`).then((response) => {
+      api.get<GameInfo[]>(`games/${text}`).then((response) => {
         setSearchingForGame(false);
-        const gamesNames: string[] = response.data.map((game: {name: string}) => game.name);
-        setGamesInfo(gamesNames);
+
+        setInputGamesInfo(response.data);
       });
     }
   }, [text, debounceValue, gameWasSelected]);
@@ -126,27 +129,31 @@ const AutoCompleteInputBase: ForwardRefRenderFunction<HTMLInputElement, InputPro
   }, []);
 
   const suggestHandler = useCallback(async (userTextInput: string) => {
+    const selectedGameInfo = inputGamesInfo.find((game) => game.name === userTextInput);
+
     setGameWasSelected(true);
     setText(userTextInput);
+
+    if (selectedGameInfo) {
+      updateGameInfo(selectedGameInfo);
+    }
+
     setSuggestions([]);
-  }, []);
+  }, [updateGameInfo, inputGamesInfo]);
 
   useEffect(() => {
     if (gameWasSelected) return;
 
-    let matches: string[] = [];
+    let matches: GameInfo[] = [];
     if (text.length > 0) {
-      matches = gamesInfo.filter((gameInfo) => {
+      matches = inputGamesInfo.filter((gameInfo) => {
         const regex = new RegExp(`${text}`, 'gi');
-        return gameInfo.match(regex);
+        return gameInfo.name.match(regex);
       });
     }
 
-    // console.log('Matches', matches);
-    // console.log(gamesInfo);
-
     setSuggestions(matches);
-  }, [gamesInfo, text, gameWasSelected]);
+  }, [inputGamesInfo, text, gameWasSelected]);
 
   const handleChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (rest && rest.onChange) {
@@ -198,11 +205,11 @@ const AutoCompleteInputBase: ForwardRefRenderFunction<HTMLInputElement, InputPro
         <Suggestions>
           {suggestions.map((suggestion) => (
             <Suggestion
-              onClick={() => suggestHandler(suggestion)}
-              onKeyDown={() => suggestHandler(suggestion)}
+              onClick={() => suggestHandler(suggestion.name)}
+              onKeyDown={() => suggestHandler(suggestion.name)}
               role="presentation"
             >
-              <p>{suggestion}</p>
+              <p>{suggestion.name}</p>
             </Suggestion>
           )).slice(0, 4)}
         </Suggestions>
